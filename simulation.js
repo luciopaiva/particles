@@ -1,9 +1,9 @@
 "use strict";
 
 const
-    SIMULATION_RELEVANT_NEIGHBORS = 8,
+    SIMULATION_CULLING_RADIUS_EXPONENT = 5,
     SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
-    SIMULATION_NUM_PARTICLES = 200;
+    SIMULATION_NUM_PARTICLES = 1000;
 
 
 class Simulation {
@@ -14,13 +14,11 @@ class Simulation {
         this.k = SIMULATION_REPULSION_CONSTANT_FACTOR;
 
         this.particles = [];
-        this.spatialIndex = new NaiveSpatialIndex();
+        this.spatialIndex = new CellularSpatialIndex(SIMULATION_CULLING_RADIUS_EXPONENT, width, height);
 
         for (let i = 0; i < SIMULATION_NUM_PARTICLES; i++) {
             const particle = new Particle(random(0, this.width), random(0, this.height));
             this.particles.push(particle);
-            const pos = particle.getPos();
-            // console.info(`Particle created at (${pos.x}, ${pos.y})`);
         }
 
         this.spatialIndex.bulkLoad(this.particles);
@@ -33,8 +31,7 @@ class Simulation {
 
         // Calculate forces acting on each particle
         for (const particle of this.particles) {
-            const neighbors = this.spatialIndex.getNearestNeighbors(
-                particle.getPos(), SIMULATION_RELEVANT_NEIGHBORS);
+            const neighbors = this.spatialIndex.getRelevantNeighbors(particle.getPos());
 
             const force = particle.getForce();
             force.set(0, 0);
@@ -57,9 +54,19 @@ class Simulation {
         // Now commit the resulting forces by updating particles' velocities and positions
         for (const particle of this.particles) {
             const accel = particle.getForce().div(particle.getMass());
-            particle.getVelocity().add(accel);
-            particle.getPos().add(particle.getVelocity());
+            const vel = particle.getVelocity();
+            vel.add(accel);
+            // Limit velocity magnitude to 50 pixels per refresh. Necessary to avoid particles escaping the sandbox
+            // (they could do that if they acquired sufficient speed).
+            // ToDo this limit should be dependant on the refresh rate (if the rate increases, so does the limit!)
+            vel.limit(5);
+            const pos = particle.getPos();
+            pos.add(vel);
         }
+
+        const entriesMoved = this.spatialIndex.update();
+        const movedPerc = (100 * (entriesMoved / SIMULATION_NUM_PARTICLES));
+        // console.info(`Entries moved: ${movedPerc}%`);
     }
 
     getParticles() {
