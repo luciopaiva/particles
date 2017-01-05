@@ -24,6 +24,8 @@ function draw() {
 
     sim.step();
 
+    let accruedSpeeds = 0;
+
     for (const particle of sim.getParticles()) {
         const pos = particle.getPos();
 
@@ -38,11 +40,13 @@ function draw() {
         //     default: fill(255, 255, 255); break;
         // }
 
-        // debug speed
-        let speed = particle.getVelocity().mag();
-        speed = Math.min(speed, 5) / 5;
-        speed = Math.floor(speed * 255);
-        fill(255, 204, 100, speed);
+        // // debug speed
+        // let speed = particle.getVelocity().mag();
+        // speed = Math.min(speed, 5) / 5;
+        // speed = Math.floor(speed * 255);
+        // fill(255, 204, 100, speed);
+
+        accruedSpeeds += particle.getVelocity().mag();
 
         ellipse(pos.x, pos.y, 8, 8);
     }
@@ -52,4 +56,7 @@ function draw() {
     // const vel = sample.getVelocity();
     // const force = sample.getForce();
     // debugConsole.text(`${pos.x}, ${pos.y} - ${vel.x}, ${vel.y} - ${force.x}, ${force.y}`)
+
+    accruedSpeeds /= sim.getParticles().length;
+    debugConsole.text(accruedSpeeds);
 }
