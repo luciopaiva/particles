@@ -38,6 +38,12 @@ function draw() {
         //     default: fill(255, 255, 255); break;
         // }
 
+        // debug speed
+        let speed = particle.getVelocity().mag();
+        speed = Math.min(speed, 5) / 5;
+        speed = Math.floor(speed * 255);
+        fill(255, 204, 100, speed);
+
         ellipse(pos.x, pos.y, 8, 8);
     }
 
