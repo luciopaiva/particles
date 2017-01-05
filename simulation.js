@@ -2,7 +2,7 @@
 
 const
     SIMULATION_RELEVANT_NEIGHBORS = 8,
-    SIMULATION_NUM_PARTICLES = 300;
+    SIMULATION_NUM_PARTICLES = 100;
 
 
 class Simulation {
@@ -34,7 +34,6 @@ class Simulation {
             const neighbors = this.spatialIndex.getNearestNeighbors(
                 particle.getPos(), SIMULATION_RELEVANT_NEIGHBORS);
 
-            // ToDo calculate resulting force
             const force = particle.getForce();
             force.set(0, 0);
 
@@ -48,8 +47,7 @@ class Simulation {
 
         // Now commit the resulting forces by updating particles' velocities and positions
         for (const particle of this.particles) {
-            // ToDo calculate new velocity and position vectors
-            const accel = particle.getForce();  // ToDo take mass into account (a = F/m)
+            const accel = particle.getForce().div(particle.getMass());
             particle.getVelocity().add(accel);
             particle.getPos().add(particle.getVelocity());
         }
