@@ -1,6 +1,7 @@
 "use strict";
 
 const
+    SIMULATION_DISPLACE_EVENLY = true,
     SIMULATION_WALLS_SHOULD_REPEL = false,
     SIMULATION_SPEED_LIMIT = 5,  // set to zero to disable it
     SIMULATION_CULLING_RADIUS_EXPONENT = 5,
@@ -18,9 +19,27 @@ class Simulation {
         this.particles = [];
         this.spatialIndex = new CellularSpatialIndex(SIMULATION_CULLING_RADIUS_EXPONENT, width, height);
 
-        for (let i = 0; i < SIMULATION_NUM_PARTICLES; i++) {
-            const particle = new Particle(random(0, this.width), random(0, this.height));
-            this.particles.push(particle);
+        if (SIMULATION_DISPLACE_EVENLY) {
+            const totalArea = width * height;
+            const areaPerParticle = totalArea / SIMULATION_NUM_PARTICLES;
+            const particleSquareSide = Math.sqrt(areaPerParticle);
+            const particlesPerRow = Math.floor(width / particleSquareSide);
+            const rowOffset = (width - particlesPerRow * particleSquareSide) / 2;
+            const particlesPerCol = Math.floor(height / particleSquareSide);
+            const colOffset = (height - particlesPerCol * particleSquareSide) / 2;
+            const particleSquareHalfSide = particleSquareSide / 2;
+
+            for (let y = colOffset; y < height; y += particleSquareSide) {
+                for (let x = rowOffset; x < width; x += particleSquareSide) {
+                    const particle = new Particle(x + particleSquareHalfSide, y + particleSquareHalfSide);
+                    this.particles.push(particle);
+                }
+            }
+        } else {
+            for (let i = 0; i < SIMULATION_NUM_PARTICLES; i++) {
+                const particle = new Particle(random(0, this.width), random(0, this.height));
+                this.particles.push(particle);
+            }
         }
 
         this.spatialIndex.bulkLoad(this.particles);
@@ -48,10 +67,20 @@ class Simulation {
 
             if (SIMULATION_WALLS_SHOULD_REPEL) {
                 // forces owing to sandbox walls repelling the particle
-                force.x += this.k / Math.pow(particle.getPos().x - 0, 2);
-                force.x -= this.k / Math.pow(particle.getPos().x - WORLD_WIDTH, 2);
-                force.y += this.k / Math.pow(particle.getPos().y - 0, 2);
-                force.y -= this.k / Math.pow(particle.getPos().y - WORLD_HEIGHT, 2);
+
+                // left wall
+                let distSqLeft = ((particle.getPos().x - 0) * (particle.getPos().x - 0)) || 1;  // must not be zero
+                // right wall
+                let distSqRight = ((particle.getPos().x - WORLD_WIDTH) * (particle.getPos().x - WORLD_WIDTH)) || 1;
+                // top wall
+                let distSqTop = ((particle.getPos().y - 0) * (particle.getPos().y - 0)) || 1;
+                // bottom wall
+                let distSqBottom = ((particle.getPos().y - WORLD_HEIGHT) * (particle.getPos().y - WORLD_HEIGHT)) || 1;
+
+                force.x += this.k / distSqLeft;
+                force.x -= this.k / distSqRight;
+                force.y += this.k / distSqTop;
+                force.y -= this.k / distSqBottom;
             }
         }
 

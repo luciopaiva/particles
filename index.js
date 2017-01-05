@@ -46,7 +46,12 @@ function draw() {
         // speed = Math.floor(speed * 255);
         // fill(255, 204, 100, speed);
 
-        accruedSpeeds += particle.getVelocity().mag();
+        let speed = particle.getVelocity().mag();
+        if (isNaN(speed)) {
+            console.error(particle);
+        } else {
+            accruedSpeeds += speed;
+        }
 
         ellipse(pos.x, pos.y, 8, 8);
     }
