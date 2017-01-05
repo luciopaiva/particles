@@ -2,7 +2,8 @@
 
 const
     SIMULATION_RELEVANT_NEIGHBORS = 8,
-    SIMULATION_NUM_PARTICLES = 100;
+    SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
+    SIMULATION_NUM_PARTICLES = 200;
 
 
 class Simulation {
@@ -10,6 +11,7 @@ class Simulation {
     constructor (width, height) {
         this.width = width;
         this.height = height;
+        this.k = SIMULATION_REPULSION_CONSTANT_FACTOR;
 
         this.particles = [];
         this.spatialIndex = new SpatialIndex();
@@ -37,12 +39,19 @@ class Simulation {
             const force = particle.getForce();
             force.set(0, 0);
 
+            // forces owing to nearby neighbors
             for (const neighbor of neighbors) {
                 const distVector = particle.getPos().copy().sub(neighbor.getPos());
-                const neighborForceMagnitude = 10 / distVector.magSq();
+                const neighborForceMagnitude = this.k / distVector.magSq();
                 const neighborForce = distVector.normalize().mult(neighborForceMagnitude);
                 force.add(neighborForce);
             }
+
+            // forces owing to sandbox walls
+            force.x += this.k / Math.pow(particle.getPos().x - 0, 2);
+            force.x -= this.k / Math.pow(particle.getPos().x - WORLD_WIDTH, 2);
+            force.y += this.k / Math.pow(particle.getPos().y - 0, 2);
+            force.y -= this.k / Math.pow(particle.getPos().y - WORLD_HEIGHT, 2);
         }
 
         // Now commit the resulting forces by updating particles' velocities and positions
