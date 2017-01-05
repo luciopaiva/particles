@@ -1,8 +1,9 @@
 "use strict";
 
-class SpatialIndex {
+class NaiveSpatialIndex extends SpatialIndex {
 
     constructor () {
+        super();
         this.entries = [];
     }
 

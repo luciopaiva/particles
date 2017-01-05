@@ -14,7 +14,7 @@ class Simulation {
         this.k = SIMULATION_REPULSION_CONSTANT_FACTOR;
 
         this.particles = [];
-        this.spatialIndex = new SpatialIndex();
+        this.spatialIndex = new NaiveSpatialIndex();
 
         for (let i = 0; i < SIMULATION_NUM_PARTICLES; i++) {
             const particle = new Particle(random(0, this.width), random(0, this.height));
