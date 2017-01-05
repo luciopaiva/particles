@@ -2,11 +2,12 @@
 
 const
     SIMULATION_DISPLACE_EVENLY = true,
-    SIMULATION_WALLS_SHOULD_REPEL = false,
+    SIMULATION_WALLS_SHOULD_REPEL = true,
     SIMULATION_SPEED_LIMIT = 5,  // set to zero to disable it
-    SIMULATION_CULLING_RADIUS_EXPONENT = 5,
+    SIMULATION_CULLING_RADIUS_EXPONENT = 6,
+    SIMULATION_CULLING_RADIUS = 1 << SIMULATION_CULLING_RADIUS_EXPONENT,
     SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
-    SIMULATION_NUM_PARTICLES = 1000;
+    SIMULATION_NUM_PARTICLES = 2000;
 
 
 class Simulation {
@@ -52,7 +53,7 @@ class Simulation {
 
         // Calculate forces acting on each particle
         for (const particle of this.particles) {
-            const neighbors = this.spatialIndex.getRelevantNeighbors(particle.getPos());
+            const neighbors = this.spatialIndex.getRelevantNeighbors(particle.getPos(), SIMULATION_CULLING_RADIUS);
 
             const force = particle.getForce();
             force.set(0, 0);
@@ -113,16 +114,16 @@ class Simulation {
 
         // ToDo take particle radius into account
 
-        if (pos.x > WORLD_WIDTH) {
-            pos.x = WORLD_WIDTH;
+        if (pos.x >= WORLD_WIDTH) {
+            pos.x = WORLD_WIDTH - 1;
             vel.x *= -1;
         } else if (pos.x < 0) {
             pos.x = 0;
             vel.x *= -1;
         }
 
-        if (pos.y > WORLD_HEIGHT) {
-            pos.y = WORLD_HEIGHT;
+        if (pos.y >= WORLD_HEIGHT) {
+            pos.y = WORLD_HEIGHT - 1;
             vel.y *= -1;
         } else if (pos.y < 0) {
             pos.y = 0;

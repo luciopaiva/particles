@@ -89,7 +89,7 @@ class CellularSpatialIndex extends SpatialIndex {
      */
     constructor (cullingRadiusExponent, width, height) {
         super();
-        this.cellSizeExponent = cullingRadiusExponent + 1;
+        this.cellSizeExponent = cullingRadiusExponent;
         this.cellSize = 1 << this.cellSizeExponent;
         this.width = width;
         this.widthInCells = Math.ceil(this.width / this.cellSize);
@@ -209,14 +209,17 @@ class CellularSpatialIndex extends SpatialIndex {
     /**
      * Returns all neighbors that contribute with significant force to a particle located at `queryVector`.
      * @param queryVector
+     * @param cullingRadius
      * @returns Array reusable list with relevant neighbors
      */
-    getRelevantNeighbors(queryVector) {
+    getRelevantNeighbors(queryVector, cullingRadius) {
         this.relevantNeighbors.length = 0;
         try {
             for (const cellIndex of this.relevantNeighborCellIndices(queryVector)) {
                 for (const neighborEntry of this.cells[cellIndex].iterateEntries()) {
-                    this.relevantNeighbors.push(neighborEntry);
+                    if (neighborEntry.getPos().dist(queryVector) < cullingRadius) {
+                        this.relevantNeighbors.push(neighborEntry);
+                    }
                 }
             }
         } catch (err) {

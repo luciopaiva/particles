@@ -22,10 +22,21 @@ function setup() {
 function draw() {
     background(51);  // clear scene
 
+    // spatial index cell grid
+    const w = SIMULATION_CULLING_RADIUS;
+    stroke(150, 150, 255);
+    for (let x = w; x < WORLD_WIDTH; x += w) {
+        line(x, 0, x, WORLD_HEIGHT);
+    }
+    for (let y = w; y < WORLD_HEIGHT; y += w) {
+        line(0, y, WORLD_WIDTH, y);
+    }
+
     sim.step();
 
     let accruedSpeeds = 0;
 
+    stroke(200, 160, 50);
     for (const particle of sim.getParticles()) {
         const pos = particle.getPos();
 
