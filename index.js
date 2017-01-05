@@ -19,6 +19,8 @@ function setup() {
 }
 
 function draw() {
+    background(51);  // clear scene
+
     sim.step();
 
     for (const particle of sim.getParticles()) {
