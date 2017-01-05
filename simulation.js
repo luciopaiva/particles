@@ -51,9 +51,16 @@ class Simulation {
         // inconsistent state and the result of entry i at time t doesn't affect the result of entry i+1 at time t
         // (all calculations for time t should only be based on particles' positions at t-1)
 
+        let accruedNeighborCount = 0;
+        let maxNeighborCount = Number.NEGATIVE_INFINITY;
+        let minNeighborCount = Number.POSITIVE_INFINITY;
+
         // Calculate forces acting on each particle
         for (const particle of this.particles) {
             const neighbors = this.spatialIndex.getRelevantNeighbors(particle.getPos(), SIMULATION_CULLING_RADIUS);
+            accruedNeighborCount += neighbors.length;
+            if (neighbors.length > maxNeighborCount) maxNeighborCount = neighbors.length;
+            if (neighbors.length < minNeighborCount) minNeighborCount = neighbors.length;
 
             const force = particle.getForce();
             force.set(0, 0);
@@ -84,6 +91,10 @@ class Simulation {
                 force.y -= this.k / distSqBottom;
             }
         }
+
+        logger.logAvgNeighborCount(accruedNeighborCount / this.particles.length);
+        logger.logMinNeighborCount(minNeighborCount);
+        logger.logMaxNeighborCount(maxNeighborCount);
 
         // Now commit the resulting forces by updating particles' velocities and positions
         for (const particle of this.particles) {

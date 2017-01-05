@@ -114,6 +114,10 @@ class CellularSpatialIndex extends SpatialIndex {
         for (const entry of entries) {
             const cellEntry = new CellEntry(entry);
             const cellIndex = this.vectorToCellIndex(entry.getPos());
+            if (!this.cells[cellIndex]) {
+                console.error('Invalid position when bulk loading!');
+                console.error(entry.getPos());
+            }
             this.cells[cellIndex].add(cellEntry);
         }
     }

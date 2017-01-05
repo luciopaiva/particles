@@ -6,20 +6,22 @@ const
     WORLD_HEIGHT = 500;
 
 let
-    sim, debugConsole;
+    sim;
 
 function setup() {
-    createCanvas(WORLD_WIDTH, WORLD_HEIGHT);
+    const canvas = createCanvas(WORLD_WIDTH, WORLD_HEIGHT);
+    canvas.parent('canvas-container');
     background(51);
     fill(255, 204, 100);
     stroke(200, 160, 50);
 
     randomSeed(42);
     sim = new Simulation(WORLD_WIDTH, WORLD_HEIGHT);
-    debugConsole = $('#debug-console');
 }
 
 function draw() {
+    if (!logger) return;  // let's wait until the logger is finally created
+
     background(51);  // clear scene
 
     // spatial index cell grid
@@ -74,5 +76,6 @@ function draw() {
     // debugConsole.text(`${pos.x}, ${pos.y} - ${vel.x}, ${vel.y} - ${force.x}, ${force.y}`)
 
     accruedSpeeds /= sim.getParticles().length;
-    debugConsole.text(accruedSpeeds);
+    logger.logAvgSpeed(accruedSpeeds);
+    logger.logNumParticles(sim.getParticles().length);
 }
