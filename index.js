@@ -1,6 +1,7 @@
 "use strict";
 
 const
+    HALF_PI = Math.PI / 2,
     WORLD_WIDTH = 800,
     WORLD_HEIGHT = 500;
 
@@ -25,11 +26,24 @@ function draw() {
 
     for (const particle of sim.getParticles()) {
         const pos = particle.getPos();
+
+        // // debug heading
+        // let heading = particle.getVelocity().heading() + Math.PI;  // value between -PI and PI
+        // heading = Math.floor(heading / HALF_PI);
+        // switch (heading) {
+        //     case 0: fill(255, 0, 0); break;
+        //     case 1: fill(0, 255, 0); break;
+        //     case 2: fill(0, 0, 255); break;
+        //     case 3: fill(255, 0, 255); break;
+        //     default: fill(255, 255, 255); break;
+        // }
+
         ellipse(pos.x, pos.y, 8, 8);
     }
 
-    const pos = sim.getParticles()[0].getPos();
-    const vel = sim.getParticles()[0].getVelocity();
-    const force = sim.getParticles()[0].getForce();
-    debugConsole.text(`${pos.x}, ${pos.y} - ${vel.x}, ${vel.y} - ${force.x}, ${force.y}`)
+    // const sample = sim.getParticles()[0];
+    // const pos = sample.getPos();
+    // const vel = sample.getVelocity();
+    // const force = sample.getForce();
+    // debugConsole.text(`${pos.x}, ${pos.y} - ${vel.x}, ${vel.y} - ${force.x}, ${force.y}`)
 }
