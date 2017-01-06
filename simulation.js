@@ -7,6 +7,8 @@ const
     SIMULATION_CULLING_RADIUS = 1 << SIMULATION_CULLING_RADIUS_EXPONENT,
     SIMULATION_CULLING_DIAMETER = SIMULATION_CULLING_RADIUS << 1,
     SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
+    SIMULATION_MEMBRANE_MOVEMENT_DELTA = 10,
+    SIMULATION_MEMBRANE_MINIMUM_BORDER_OFFSET = 20,
     SIMULATION_NUM_PARTICLES = 2000;
 
 
@@ -27,6 +29,7 @@ class Simulation {
         this.isMembraneActive = false;
         this.membraneX = this.width / 2;
         this.membraneGap = 32;
+        this.membraneGapY = (this.height - this.membraneGap) / 2;
         this.membraneAuxVector = createVector(0, 0);
 
         if (SIMULATION_DISPLACE_EVENLY) {
@@ -152,21 +155,23 @@ class Simulation {
         const newPos = particle.getPos();
         if (oldPos.x < this.membraneX && newPos.x >= this.membraneX) {
             // coming from the left to the right
-            const gapY = (this.height - this.membraneGap) / 2;  // ToDo precalculate this
-            if (oldPos.y <= gapY || oldPos.y >= gapY + this.membraneGap) {
+            if (!this.isWithinMembraneGapY(oldPos.y)) {
                 // not passing through the gap, so let's bounce it
                 newPos.x = this.membraneX - 1;
                 particle.getVelocity().x *= -1;
             }
         } else if (oldPos.x > this.membraneX && newPos.x <= this.membraneX) {
             // coming from the right to the left
-            const gapY = (this.height - this.membraneGap) / 2;
-            if (oldPos.y <= gapY || oldPos.y >= gapY + this.membraneGap) {
+            if (!this.isWithinMembraneGapY(oldPos.y)) {
                 // not passing through the gap, so let's bounce it
                 newPos.x = this.membraneX + 1;
                 particle.getVelocity().x *= -1;
             }
         }
+    }
+
+    isWithinMembraneGapY(y) {
+        return (y > this.membraneGapY && y < this.membraneGapY + this.membraneGap);
     }
 
     adjustIfParticleIsOverbound(particle) {
@@ -236,27 +241,34 @@ class Simulation {
     }
 
     incrementMembraneX() {
-        const newX = this.membraneX + 10;
-        if (newX > this.width - 20) return;  // do not let it come too close to the borders
-        const oldX = this.membraneX;
-        for (const particle of this.particles) {  // ToDo use the grid to filter out distant particles
-            if (particle.getPos().x > oldX && particle.getPos().x < newX) {
-                particle.getPos().x = newX + 1;
-            }
+        const newX = this.membraneX + SIMULATION_MEMBRANE_MOVEMENT_DELTA;
+        if (newX > this.width - SIMULATION_MEMBRANE_MINIMUM_BORDER_OFFSET) {
+            // do not let it come too close to the borders
+            return;
         }
+        const oldX = this.membraneX;
+        this.dragParticlesUponMembraneMove(oldX, newX, newX + 1);
         this.membraneX = newX;
     }
 
     decrementMembraneX() {
-        const newX = this.membraneX - 10;
-        if (newX < 20) return;  // do not let it come too close to the borders
+        const newX = this.membraneX - SIMULATION_MEMBRANE_MOVEMENT_DELTA;
+        if (newX < SIMULATION_MEMBRANE_MINIMUM_BORDER_OFFSET) {
+            // do not let it come too close to the borders
+            return;
+        }
         const oldX = this.membraneX;
+        this.dragParticlesUponMembraneMove(newX, oldX, newX - 1);
+        this.membraneX = newX;
+    }
+
+    dragParticlesUponMembraneMove(leftX, rightX, dragPositionX) {
         for (const particle of this.particles) {  // ToDo use the grid to filter out distant particles
-            if (particle.getPos().x < oldX && particle.getPos().x > newX) {
-                particle.getPos().x = newX - 1;
+            if (particle.getPos().x > leftX && particle.getPos().x < rightX &&
+                !this.isWithinMembraneGapY(particle.getPos().y)) {
+                particle.getPos().x = dragPositionX;
             }
         }
-        this.membraneX = newX;
     }
 
     getMembraneGap() {
