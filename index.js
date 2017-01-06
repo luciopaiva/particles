@@ -28,6 +28,8 @@ class MainApp {
     }
 
     draw() {
+        this.updateMetrics();
+
         if (!this.started) return;
 
         this.simulator.step();
@@ -35,7 +37,6 @@ class MainApp {
         this.drawBackground();
         this.drawParticles();
         this.drawSelectedParticle();
-        this.updateMetrics();
     }
 
     drawParticles() {
@@ -110,6 +111,8 @@ class MainApp {
     }
 
     updateMetrics() {
+        if (!logger) return null;
+
         let accruedSpeeds = 0;
 
         for (const particle of this.simulator.getParticles()) {
