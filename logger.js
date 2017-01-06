@@ -5,7 +5,6 @@ let logger = null;
 class Logger {
 
     constructor () {
-        this.generalLog = $('#debug-console');
         this.fps = $('#fps');
         this.numParticles = $('#num-particles');
         this.migratedParticles = $('#migrated-particles');
@@ -17,10 +16,6 @@ class Logger {
 
     logFloat(elem, value, prec) {
         elem.text(value.toFixed(prec));
-    }
-
-    log(msg) {
-        this.generalLog.text(msg);
     }
 
     logFps(fps) {

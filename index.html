@@ -18,16 +18,26 @@
 <body>
 <table>
     <tr>
-        <td id="canvas-container"></td>
+        <td rowspan="2" id="canvas-container"></td>
         <td>
-            <div>Debug: <span id="debug-console">-</span></div>
-            <div>FPS: <span id="fps"></span></div>
-            <div>Num. particles: <span id="num-particles"></span></div>
-            <div>Migrated particles: <span id="migrated-particles"></span></div>
-            <div>Avg. speed: <span id="avg-speed"></span></div>
-            <div>Min. neighbor count: <span id="min-neighbor-count"></span></div>
-            <div>Avg. neighbor count: <span id="avg-neighbor-count"></span></div>
-            <div>Max. neighbor count: <span id="max-neighbor-count"></span></div>
+            <table>
+                <tr><th>Metrics</th></tr>
+                <tr><td>FPS: <span id="fps"></td></tr>
+                <tr><td>Num. particles: <span id="num-particles"></span></td></tr>
+                <tr><td>Migrated particles: <span id="migrated-particles"></span></td></tr>
+                <tr><td>Avg. speed: <span id="avg-speed"></span></td></tr>
+                <tr><td>Min. neighbor count: <span id="min-neighbor-count"></span></td></tr>
+                <tr><td>Avg. neighbor count: <span id="avg-neighbor-count"></span></td></tr>
+                <tr><td>Max. neighbor count: <span id="max-neighbor-count"></span></td></tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table>
+                <tr><th>Keys</th></tr>
+                <tr><td>Start/pause simulation: &lt;return&gt;</td></tr>
+            </table>
         </td>
     </tr>
 </table>

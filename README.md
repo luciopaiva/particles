@@ -2,7 +2,6 @@
 
 # To do
 
-- remove tail from linked list (there's no need for it)
 - fix the nearest n when considering neighbors?
 - along with the proposal above, also adjust grid based on how many particles are being simulated, so we can scale
   (otherwise, as the density increases, grid cells would contain more and more particles)
