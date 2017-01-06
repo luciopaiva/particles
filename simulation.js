@@ -143,6 +143,12 @@ class Simulation {
         }
     }
 
+    resetParticlesVelocities() {
+        for (const particle of this.particles) {
+            particle.getVelocity().set(0, 0);
+        }
+    }
+
     getParticles() {
         return this.particles;
     }

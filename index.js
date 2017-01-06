@@ -116,6 +116,8 @@ function keyPressed() {
         case 87:  // w
             sim.toggleRepellingWalls();
             break;
+        case 75:  // k
+            sim.resetParticlesVelocities();
         default:
             console.info('keyCode = ' + keyCode);
     }
