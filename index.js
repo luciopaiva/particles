@@ -14,6 +14,7 @@ class MainApp {
         this.started = false;
         this.showGrid = false;
         this.renderMode = RENDER_MODE_NORMAL;
+        this.previousBounceCheck = (new Date()).getTime();
     }
 
     setup() {
@@ -35,7 +36,7 @@ class MainApp {
         this.simulator.step();
 
         this.drawBackground();
-        this.drawMembrane();
+        this.updateMembrane();
         this.drawParticles();
         this.drawSelectedParticle();
     }
@@ -111,8 +112,15 @@ class MainApp {
         }
     }
 
-    drawMembrane() {
+    updateMembrane() {
         if (this.simulator.hasMembrane()) {
+            const now = (new Date()).getTime();
+            if (keyIsDown(LEFT_ARROW) && this.checkKeyBounce(now)) {
+                this.simulator.decrementMembraneX();
+            } else if (keyIsDown(RIGHT_ARROW) && this.checkKeyBounce(now)) {
+                this.simulator.incrementMembraneX();
+            }
+
             const x = this.simulator.getMembraneX();
             const gap = this.simulator.getMembraneGap();
             const height = (WORLD_HEIGHT - gap) / 2;
@@ -122,6 +130,14 @@ class MainApp {
             line(x, height + gap, x, WORLD_HEIGHT);
             strokeWeight(1);
         }
+    }
+
+    checkKeyBounce(now) {
+        if (now - 20 > this.previousBounceCheck) {
+            this.previousBounceCheck = now;
+            return true;
+        }
+        return false;
     }
 
     updateMetrics() {
@@ -148,12 +164,6 @@ class MainApp {
         switch (keyCode) {
             case RETURN:
                 this.started = !this.started;
-                break;
-            case LEFT_ARROW:
-                this.simulator.decrementMembraneX();
-                break;
-            case RIGHT_ARROW:
-                this.simulator.incrementMembraneX();
                 break;
             case 49:  // 1
                 this.renderMode = RENDER_MODE_NORMAL;
