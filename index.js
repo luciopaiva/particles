@@ -92,8 +92,11 @@ function draw() {
 
     const selectedParticle = sim.getSelectedParticle();
     if (selectedParticle) {
-        fill(255, 204, 200);
+        fill(0, 255, 0);
         ellipse(selectedParticle.getPos().x, selectedParticle.getPos().y, 8, 8);
+        noFill();
+        ellipse(selectedParticle.getPos().x, selectedParticle.getPos().y,
+            SIMULATION_CULLING_DIAMETER, SIMULATION_CULLING_DIAMETER);
         fill(255, 0, 0);
         for (const neighbor of sim.getSelectedNeighbors()) {
             ellipse(neighbor.getPos().x, neighbor.getPos().y, 8, 8);

@@ -225,17 +225,21 @@ class CellularSpatialIndex extends SpatialIndex {
 
     /**
      * Returns all neighbors that contribute with significant force to a particle located at `queryVector`.
-     * @param queryVector
+     * @param particle
      * @param cullingRadius
      * @returns Array reusable list with relevant neighbors
      */
-    getRelevantNeighbors(queryVector, cullingRadius) {
+    getRelevantNeighbors(particle, cullingRadius) {
+        const queryVector = particle.getPos();
         this.relevantNeighbors.length = 0;
         try {
+            // pre-filter particles by selecting only the ones in the vicinity (using the cell grid)
             for (const cellIndex of this.relevantNeighborCellIndices(queryVector)) {
                 for (const cellEntry of this.cells[cellIndex].iterate()) {
                     const neighborEntry = cellEntry.getEntry();
-                    if (neighborEntry.getPos().dist(queryVector) < cullingRadius) {
+                    // now post-filter by culling the ones far from our circle of interest
+                    if (neighborEntry !== particle &&  // exclude ourselves from the result
+                        neighborEntry.getPos().dist(queryVector) < cullingRadius) {
                         this.relevantNeighbors.push(neighborEntry);
                     }
                 }

@@ -5,6 +5,7 @@ const
     SIMULATION_SPEED_LIMIT = 1,  // set to zero to disable it
     SIMULATION_CULLING_RADIUS_EXPONENT = 5,
     SIMULATION_CULLING_RADIUS = 1 << SIMULATION_CULLING_RADIUS_EXPONENT,
+    SIMULATION_CULLING_DIAMETER = SIMULATION_CULLING_RADIUS << 1,
     SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
     SIMULATION_NUM_PARTICLES = 1000;
 
@@ -61,7 +62,7 @@ class Simulation {
 
         // Calculate forces acting on each particle
         for (const particle of this.particles) {
-            const neighbors = this.spatialIndex.getRelevantNeighbors(particle.getPos(), SIMULATION_CULLING_RADIUS);
+            const neighbors = this.spatialIndex.getRelevantNeighbors(particle, SIMULATION_CULLING_RADIUS);
             accruedNeighborCount += neighbors.length;
             if (neighbors.length > maxNeighborCount) maxNeighborCount = neighbors.length;
             if (neighbors.length < minNeighborCount) minNeighborCount = neighbors.length;
