@@ -35,6 +35,7 @@ class MainApp {
         this.simulator.step();
 
         this.drawBackground();
+        this.drawMembrane();
         this.drawParticles();
         this.drawSelectedParticle();
     }
@@ -110,6 +111,19 @@ class MainApp {
         }
     }
 
+    drawMembrane() {
+        if (this.simulator.hasMembrane()) {
+            const x = this.simulator.getMembraneX();
+            const gap = this.simulator.getMembraneGap();
+            const height = (WORLD_HEIGHT - gap) / 2;
+            strokeWeight(4);
+            stroke(200, 200, 200);
+            line(x, 0, x, height);
+            line(x, height + gap, x, WORLD_HEIGHT);
+            strokeWeight(1);
+        }
+    }
+
     updateMetrics() {
         if (!logger) return null;
 
@@ -152,6 +166,9 @@ class MainApp {
                 break;
             case 75:  // k
                 this.simulator.resetParticlesVelocities();
+                break;
+            case 77:  // m
+                this.simulator.toggleMembrane();
                 break;
             case 82:  // r
                 this.simulator.toggleRandomParticle();

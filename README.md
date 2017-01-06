@@ -2,6 +2,7 @@
 
 # To do
 
+- gravity
 - toogle force mode:
   1. inverse gravitation force (inversely proportional to the square distance between each pair of particles)
   2. nearby springs (find nearest n, calculate average distance d and use it as a the rest length of a spring between
@@ -14,4 +15,3 @@
   (alternatively, each spacebar press would introduce a single one, and the user could press it several times to create
    a stream of particles)
 - add energy loss (heat?) when particles travel (and maybe when then collide)
-- particles should not cross each other under any circumstances (an infinite repelling force would prevent that)

@@ -24,6 +24,10 @@ class Simulation {
         this.selectedNeighbors = [];
         this.hasWave = false;
         this.waveIntensity = 0;
+        this.isMembraneActive = false;
+        this.membraneX = this.width / 2;
+        this.membraneGap = 32;
+        this.membraneAuxVector = createVector(0, 0);
 
         if (SIMULATION_DISPLACE_EVENLY) {
             const totalArea = width * height;
@@ -120,6 +124,7 @@ class Simulation {
 
         // Now commit the resulting forces by updating particles' velocities and positions
         for (const particle of this.particles) {
+            if (this.hasMembrane()) this.membraneAuxVector.set(particle.getPos());
             const accel = particle.getForce().div(particle.getMass());
             const vel = particle.getVelocity();
             vel.add(accel);
@@ -134,10 +139,34 @@ class Simulation {
 
             // check if position is overbound and correct it if so, also mirroring velocity vector in the process
             this.adjustIfParticleIsOverbound(particle);
+            if (this.hasMembrane()) this.checkMembrane(this.membraneAuxVector, particle);
         }
 
         const entriesMoved = this.spatialIndex.update();
         logger.logMigratedParticles(entriesMoved);
+    }
+
+    checkMembrane(oldPos, particle) {
+        // ToDo no need to check if particle not in the vicinity - use the grid
+
+        const newPos = particle.getPos();
+        if (oldPos.x < this.membraneX && newPos.x >= this.membraneX) {
+            // coming from the left to the right
+            const gapY = (this.height - this.membraneGap) / 2;  // ToDo precalculate this
+            if (oldPos.y <= gapY || oldPos.y >= gapY + this.membraneGap) {
+                // not passing through the gap, so let's bounce it
+                newPos.x = this.membraneX - 1;
+                particle.getVelocity().x *= -1;
+            }
+        } else if (oldPos.x > this.membraneX && newPos.x <= this.membraneX) {
+            // coming from the right to the left
+            const gapY = (this.height - this.membraneGap) / 2;
+            if (oldPos.y <= gapY || oldPos.y >= gapY + this.membraneGap) {
+                // not passing through the gap, so let's bounce it
+                newPos.x = this.membraneX + 1;
+                particle.getVelocity().x *= -1;
+            }
+        }
     }
 
     adjustIfParticleIsOverbound(particle) {
@@ -196,5 +225,21 @@ class Simulation {
 
     toggleWave() {
         this.hasWave = !this.hasWave;
+    }
+
+    hasMembrane() {
+        return this.isMembraneActive;
+    }
+
+    getMembraneX() {
+        return this.membraneX;
+    }
+
+    getMembraneGap() {
+        return this.membraneGap
+    }
+
+    toggleMembrane() {
+        this.isMembraneActive = !this.isMembraneActive;
     }
 }
