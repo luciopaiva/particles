@@ -24,43 +24,27 @@ class MainApp {
         stroke(200, 160, 50);
 
         randomSeed(42);
-        this.sim = new Simulation(WORLD_WIDTH, WORLD_HEIGHT);
+        this.simulator = new Simulation(WORLD_WIDTH, WORLD_HEIGHT);
     }
 
     draw() {
         if (!this.started) return;
 
-        background(51);  // clear scene
+        this.simulator.step();
 
-        if (this.showGrid) {
-            // ToDo is it possible to render this once? Maybe 2 separate canvases on top of each other?
-            // spatial index cell grid
-            const w = SIMULATION_CULLING_RADIUS;
-            stroke(150, 150, 255);
-            fill(150, 150, 255);
-            for (let x = w; x < WORLD_WIDTH; x += w) {
-                line(x, 0, x, WORLD_HEIGHT);
-            }
-            for (let y = w; y < WORLD_HEIGHT; y += w) {
-                line(0, y, WORLD_WIDTH, y);
-            }
-            for (let i = 0, y = 0; y < WORLD_HEIGHT; y += w) {
-                for (let x = 0; x < WORLD_WIDTH; x += w) {
-                    text(i++, x + 2, y + 12);
-                }
-            }
-        }
+        this.drawBackground();
+        this.drawParticles();
+        this.drawSelectedParticle();
+        this.updateMetrics();
+    }
 
-        this.sim.step();
-
-        let accruedSpeeds = 0;
-
+    drawParticles() {
         stroke(200, 160, 50);
         if (this.renderMode == RENDER_MODE_NORMAL) {
             fill(255, 204, 100);
         }
 
-        for (const particle of this.sim.getParticles()) {
+        for (const particle of this.simulator.getParticles()) {
             const pos = particle.getPos();
 
             if (this.renderMode == RENDER_MODE_HEADING) {
@@ -82,18 +66,13 @@ class MainApp {
                 fill(255, 204, 100, speed);
             }
 
-            let speed = particle.getVelocity().mag();
-            if (isNaN(speed)) {
-                console.error(particle);
-            } else {
-                accruedSpeeds += speed;
-            }
-
             ellipse(pos.x, pos.y, 8, 8);
             // text(particle.getIndex(), pos.x + 10, pos.y);
         }
+    }
 
-        const selectedParticle = this.sim.getSelectedParticle();
+    drawSelectedParticle() {
+        const selectedParticle = this.simulator.getSelectedParticle();
         if (selectedParticle) {
             fill(0, 255, 0);
             ellipse(selectedParticle.getPos().x, selectedParticle.getPos().y, 8, 8);
@@ -101,14 +80,50 @@ class MainApp {
             ellipse(selectedParticle.getPos().x, selectedParticle.getPos().y,
                 SIMULATION_CULLING_DIAMETER, SIMULATION_CULLING_DIAMETER);
             fill(255, 0, 0);
-            for (const neighbor of this.sim.getSelectedNeighbors()) {
+            for (const neighbor of this.simulator.getSelectedNeighbors()) {
                 ellipse(neighbor.getPos().x, neighbor.getPos().y, 8, 8);
             }
         }
+    }
 
-        accruedSpeeds /= this.sim.getParticles().length;
+    drawBackground() {
+        background(51);  // clear scene
+
+        if (this.showGrid) {
+            // ToDo is it possible to render this once? Maybe 2 separate canvases on top of each other?
+            // spatial index cell grid
+            const w = SIMULATION_CULLING_RADIUS;
+            stroke(150, 150, 255);
+            fill(150, 150, 255);
+            for (let x = w; x < WORLD_WIDTH; x += w) {
+                line(x, 0, x, WORLD_HEIGHT);
+            }
+            for (let y = w; y < WORLD_HEIGHT; y += w) {
+                line(0, y, WORLD_WIDTH, y);
+            }
+            for (let i = 0, y = 0; y < WORLD_HEIGHT; y += w) {
+                for (let x = 0; x < WORLD_WIDTH; x += w) {
+                    text(i++, x + 2, y + 12);
+                }
+            }
+        }
+    }
+
+    updateMetrics() {
+        let accruedSpeeds = 0;
+
+        for (const particle of this.simulator.getParticles()) {
+            let speed = particle.getVelocity().mag();  // ToDo cache magnitude (magnitude is being calculated more than once)
+            if (isNaN(speed)) {
+                console.error(particle);
+            } else {
+                accruedSpeeds += speed;
+            }
+        }
+
+        accruedSpeeds /= this.simulator.getParticles().length;
         logger.logAvgSpeed(accruedSpeeds);
-        logger.logNumParticles(this.sim.getParticles().length);
+        logger.logNumParticles(this.simulator.getParticles().length);
         logger.logFps(frameRate());
     }
 
@@ -130,16 +145,14 @@ class MainApp {
                 this.showGrid = !this.showGrid;
                 break;
             case 87:  // w
-                this.sim.toggleRepellingWalls();
+                this.simulator.toggleRepellingWalls();
                 break;
             case 75:  // k
-                this.sim.resetParticlesVelocities();
+                this.simulator.resetParticlesVelocities();
                 break;
             case 82:  // r
-                this.sim.toggleRandomParticle();
+                this.simulator.toggleRandomParticle();
                 break;
-            default:
-                console.info('keyCode = ' + keyCode);
         }
     }
 }
