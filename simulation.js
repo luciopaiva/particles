@@ -172,11 +172,9 @@ class Simulation {
     toggleRandomParticle() {
         if (this.selectedParticle) {
             this.selectedParticle = null;
-            console.info('No particle selected');
         } else {
             const selectedIndex = Math.floor(random(0, this.particles.length));
             this.selectedParticle = this.particles[selectedIndex];
-            console.info('Selected particle ' + this.selectedParticle.getIndex());
         }
     }
 
