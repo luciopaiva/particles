@@ -34,59 +34,55 @@ class CellularSpatialIndexCell {
      * @param {CellEntry} entry
      */
     add(entry) {
-        if (this.head == null) {
-            this.head = entry;
-            this.tail = entry;
-        } else {
-            if (entry === this.tail) {
+        // ToDo remove this snippet
+        for (const cur of this.iterate()) {
+            if (cur === entry) {
                 this.dumpEntries();
                 throw new Error(`Something wrong happened! Inserted a duplicate at cell ${this.index}! Entry index is ${entry.getEntry().getIndex()}`);
             }
-
-            this.tail.next(entry);
-            this.tail = entry;
         }
-        entry.next(null);
+
+        const temp = this.head;
+        this.head = entry;
+        entry.next(temp);
+
         this.length++;
     }
 
-    *iterateEntries() {
+    *iterate() {
         let cur = this.head;
         while (cur != null) {
-            yield cur.getEntry();
+            yield cur;
             cur = cur.next();
         }
     }
 
-    purgeEntries(shouldPurgeCallback, purgedEntriesList) {
+    purgeEntries(shouldPurgeEntryCallback, purgedEntriesList) {
         let cur = this.head;
         let previous = null;
 
         while (cur != null) {
-            if (shouldPurgeCallback(cur.getEntry())) {
-                this.length--;
-
+            if (shouldPurgeEntryCallback(cur.getEntry())) {
                 if (previous) {
                     previous.next(cur.next())
                 } else {
                     this.head = cur.next();
                 }
 
-                if (cur.next() === null) {
-                    // just removed the tail, so update it to point to the previous entry
-                    this.tail = previous;
-                }
-
+                this.length--;
                 purgedEntriesList.push(cur);
+            } else {
+                // only update previous if current one was not purged
+                previous = cur;
             }
-            previous = cur;
             cur = cur.next();
         }
+
         return purgedEntriesList;
     }
 
     dumpEntries() {
-        console.info([...this.iterateEntries()].map(entry => entry.index).join(', '));
+        console.info([...this.iterate()].map(entry => entry.getEntry().index).join(', '));
     }
 }
 
@@ -237,7 +233,8 @@ class CellularSpatialIndex extends SpatialIndex {
         this.relevantNeighbors.length = 0;
         try {
             for (const cellIndex of this.relevantNeighborCellIndices(queryVector)) {
-                for (const neighborEntry of this.cells[cellIndex].iterateEntries()) {
+                for (const cellEntry of this.cells[cellIndex].iterate()) {
+                    const neighborEntry = cellEntry.getEntry();
                     if (neighborEntry.getPos().dist(queryVector) < cullingRadius) {
                         this.relevantNeighbors.push(neighborEntry);
                     }
