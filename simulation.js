@@ -1,13 +1,13 @@
 "use strict";
 
 const
-    SIMULATION_DISPLACE_EVENLY = true,
+    SIMULATION_DISPLACE_EVENLY = false,
     SIMULATION_WALLS_SHOULD_REPEL = true,
     SIMULATION_SPEED_LIMIT = 5,  // set to zero to disable it
     SIMULATION_CULLING_RADIUS_EXPONENT = 6,
     SIMULATION_CULLING_RADIUS = 1 << SIMULATION_CULLING_RADIUS_EXPONENT,
     SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
-    SIMULATION_NUM_PARTICLES = 2000;
+    SIMULATION_NUM_PARTICLES = 300;
 
 
 class Simulation {
@@ -23,6 +23,7 @@ class Simulation {
         if (SIMULATION_DISPLACE_EVENLY) {
             const totalArea = width * height;
             const areaPerParticle = totalArea / SIMULATION_NUM_PARTICLES;
+            // FixMe this is wrong - it treats the area as if it was a square, but it is a rectangle
             const particleSquareSide = Math.sqrt(areaPerParticle);
             const particlesPerRow = Math.floor(width / particleSquareSide);
             const rowOffset = (width - particlesPerRow * particleSquareSide) / 2;
@@ -30,9 +31,10 @@ class Simulation {
             const colOffset = (height - particlesPerCol * particleSquareSide) / 2;
             const particleSquareHalfSide = particleSquareSide / 2;
 
-            for (let y = colOffset; y < height; y += particleSquareSide) {
-                for (let x = rowOffset; x < width; x += particleSquareSide) {
-                    const particle = new Particle(x + particleSquareHalfSide, y + particleSquareHalfSide);
+            for (let y = colOffset + particleSquareHalfSide; y < height; y += particleSquareSide) {
+                for (let x = rowOffset + particleSquareHalfSide; x < width; x += particleSquareSide) {
+                    const particle = new Particle(x, y);
+                    // console.info(x, y);
                     this.particles.push(particle);
                 }
             }
@@ -115,8 +117,7 @@ class Simulation {
         }
 
         const entriesMoved = this.spatialIndex.update();
-        // const movedPerc = (100 * (entriesMoved / SIMULATION_NUM_PARTICLES));
-        // console.info(`Entries moved: ${movedPerc}%`);
+        logger.logMigratedParticles(entriesMoved);
     }
 
     adjustIfParticleIsOverbound(particle) {

@@ -6,7 +6,9 @@ class Logger {
 
     constructor () {
         this.generalLog = $('#debug-console');
+        this.fps = $('#fps');
         this.numParticles = $('#num-particles');
+        this.migratedParticles = $('#migrated-particles');
         this.averageSpeed = $('#avg-speed');
         this.minNeighborCount = $('#min-neighbor-count');
         this.averageNeighborCount = $('#avg-neighbor-count');
@@ -21,8 +23,16 @@ class Logger {
         this.generalLog.text(msg);
     }
 
+    logFps(fps) {
+        this.logFloat(this.fps, fps, 2);
+    }
+
     logNumParticles(numParticles) {
         this.numParticles.text(numParticles);
+    }
+
+    logMigratedParticles(migratedParticles) {
+        this.migratedParticles.text(migratedParticles);
     }
 
     logAvgSpeed(speed) {

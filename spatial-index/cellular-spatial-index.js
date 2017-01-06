@@ -1,23 +1,53 @@
 "use strict";
 
-class CellularSpatialIndexCell {
 
-    constructor () {
-        this.head = null;
+class CellEntry {
+
+    constructor (entry) {
+        this.entry = entry;
+        this._next = null;
     }
 
+    getEntry() {
+        return this.entry;
+    }
+
+    next(_next) {
+        if (_next !== undefined) {  // accept null as a valid value
+            this._next = _next;
+        }
+        return this._next;
+    }
+}
+
+class CellularSpatialIndexCell {
+
+    constructor (index) {
+        this.index = index;
+        this.head = null;
+        this.length = 0;
+    }
+
+    /**
+     * Add an entry to this cell.
+     *
+     * @param {CellEntry} entry
+     */
     add(entry) {
         if (this.head == null) {
             this.head = entry;
-            entry.next(null);
-            entry.previous(null);
             this.tail = entry;
         } else {
+            if (entry === this.tail) {
+                this.dumpEntries();
+                throw new Error(`Something wrong happened! Inserted a duplicate at cell ${this.index}! Entry index is ${entry.getEntry().getIndex()}`);
+            }
+
             this.tail.next(entry);
-            entry.next(null);
-            entry.previous(this.tail);
             this.tail = entry;
         }
+        entry.next(null);
+        this.length++;
     }
 
     *iterateEntries() {
@@ -30,46 +60,33 @@ class CellularSpatialIndexCell {
 
     purgeEntries(shouldPurgeCallback, purgedEntriesList) {
         let cur = this.head;
+        let previous = null;
+
         while (cur != null) {
             if (shouldPurgeCallback(cur.getEntry())) {
-                // ToDo we probably don't need CellEntry.previous() and we can just have a local variable pointing to the previous cell entry
-                if (cur.previous()) {
-                    cur.previous().next(cur.next())
+                this.length--;
+
+                if (previous) {
+                    previous.next(cur.next())
+                } else {
+                    this.head = cur.next();
                 }
+
+                if (cur.next() === null) {
+                    // just removed the tail, so update it to point to the previous entry
+                    this.tail = previous;
+                }
+
                 purgedEntriesList.push(cur);
             }
+            previous = cur;
             cur = cur.next();
         }
         return purgedEntriesList;
     }
-}
 
-class CellEntry {
-
-    constructor (entry) {
-        this.entry = entry;
-        this._next = null;
-        this._previous = null;
-    }
-
-    setNext(entry) {
-        this._next = entry;
-    }
-
-    setPrevious(entry) {
-        this._previous = entry;
-    }
-
-    getEntry() {
-        return this.entry;
-    }
-
-    next() {
-        return this._next;
-    }
-
-    previous() {
-        return this._previous;
+    dumpEntries() {
+        console.info([...this.iterateEntries()].map(entry => entry.index).join(', '));
     }
 }
 
@@ -106,7 +123,7 @@ class CellularSpatialIndex extends SpatialIndex {
         this.cells = [];
         this.totalCellCount = this.widthInCells * this.heightInCells;
         for (let i = 0; i < this.totalCellCount; i++) {
-            this.cells.push(new CellularSpatialIndexCell());
+            this.cells.push(new CellularSpatialIndexCell(i));
         }
     }
 
@@ -235,6 +252,9 @@ class CellularSpatialIndex extends SpatialIndex {
 
     _checkIfChangedCells(currentCellIndex, entry) {
         const actualCellIndex = this.vectorToCellIndex(entry.getPos());
+        // if (actualCellIndex != currentCellIndex) {
+        //     console.info(`Entry index ${entry.getIndex()} changed from ${currentCellIndex} to ${actualCellIndex}`);
+        // }
         return (actualCellIndex != currentCellIndex);
     }
 

@@ -6,6 +6,7 @@ const
     WORLD_HEIGHT = 500;
 
 let
+    started = false,
     sim;
 
 function setup() {
@@ -20,18 +21,25 @@ function setup() {
 }
 
 function draw() {
-    if (!logger) return;  // let's wait until the logger is finally created
+    if (!started) return;
 
     background(51);  // clear scene
 
+    // ToDo is it possible to render this once? Maybe 2 separate canvases on top of each other?
     // spatial index cell grid
     const w = SIMULATION_CULLING_RADIUS;
     stroke(150, 150, 255);
+    fill(150, 150, 255);
     for (let x = w; x < WORLD_WIDTH; x += w) {
         line(x, 0, x, WORLD_HEIGHT);
     }
     for (let y = w; y < WORLD_HEIGHT; y += w) {
         line(0, y, WORLD_WIDTH, y);
+    }
+    for (let i = 0, y = 0; y < WORLD_HEIGHT; y += w) {
+        for (let x = 0; x < WORLD_WIDTH; x += w) {
+            text(i++, x + 2, y + 12);
+        }
     }
 
     sim.step();
@@ -39,6 +47,7 @@ function draw() {
     let accruedSpeeds = 0;
 
     stroke(200, 160, 50);
+    fill(255, 204, 100);
     for (const particle of sim.getParticles()) {
         const pos = particle.getPos();
 
@@ -67,6 +76,7 @@ function draw() {
         }
 
         ellipse(pos.x, pos.y, 8, 8);
+        // text(particle.getIndex(), pos.x + 10, pos.y);
     }
 
     // const sample = sim.getParticles()[0];
@@ -78,4 +88,11 @@ function draw() {
     accruedSpeeds /= sim.getParticles().length;
     logger.logAvgSpeed(accruedSpeeds);
     logger.logNumParticles(sim.getParticles().length);
+    logger.logFps(frameRate());
+}
+
+function keyPressed() {
+    if (keyCode == RETURN) {
+        started = !started;
+    }
 }
