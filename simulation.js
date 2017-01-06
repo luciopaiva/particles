@@ -2,7 +2,6 @@
 
 const
     SIMULATION_DISPLACE_EVENLY = false,
-    SIMULATION_WALLS_SHOULD_REPEL = true,
     SIMULATION_SPEED_LIMIT = 1,  // set to zero to disable it
     SIMULATION_CULLING_RADIUS_EXPONENT = 5,
     SIMULATION_CULLING_RADIUS = 1 << SIMULATION_CULLING_RADIUS_EXPONENT,
@@ -15,8 +14,9 @@ class Simulation {
     constructor (width, height) {
         this.width = width;
         this.height = height;
-        this.k = SIMULATION_REPULSION_CONSTANT_FACTOR;
 
+        this.k = SIMULATION_REPULSION_CONSTANT_FACTOR;
+        this.shouldWallsRepel = true;
         this.particles = [];
         this.spatialIndex = new CellularSpatialIndex(SIMULATION_CULLING_RADIUS_EXPONENT, width, height);
 
@@ -75,7 +75,7 @@ class Simulation {
                 force.add(neighborForce);
             }
 
-            if (SIMULATION_WALLS_SHOULD_REPEL) {
+            if (this.shouldWallsRepel) {
                 // forces owing to sandbox walls repelling the particle
 
                 // left wall
@@ -145,5 +145,9 @@ class Simulation {
 
     getParticles() {
         return this.particles;
+    }
+
+    toggleRepellingWalls() {
+        this.shouldWallsRepel = !this.shouldWallsRepel;
     }
 }
