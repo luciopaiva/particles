@@ -235,6 +235,30 @@ class Simulation {
         return this.membraneX;
     }
 
+    incrementMembraneX() {
+        const newX = this.membraneX + 10;
+        if (newX > this.width - 20) return;  // do not let it come too close to the borders
+        const oldX = this.membraneX;
+        for (const particle of this.particles) {  // ToDo use the grid to filter out distant particles
+            if (particle.getPos().x > oldX && particle.getPos().x < newX) {
+                particle.getPos().x = newX + 1;
+            }
+        }
+        this.membraneX = newX;
+    }
+
+    decrementMembraneX() {
+        const newX = this.membraneX - 10;
+        if (newX < 20) return;  // do not let it come too close to the borders
+        const oldX = this.membraneX;
+        for (const particle of this.particles) {  // ToDo use the grid to filter out distant particles
+            if (particle.getPos().x < oldX && particle.getPos().x > newX) {
+                particle.getPos().x = newX - 1;
+            }
+        }
+        this.membraneX = newX;
+    }
+
     getMembraneGap() {
         return this.membraneGap
     }

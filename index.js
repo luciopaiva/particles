@@ -149,6 +149,12 @@ class MainApp {
             case RETURN:
                 this.started = !this.started;
                 break;
+            case LEFT_ARROW:
+                this.simulator.decrementMembraneX();
+                break;
+            case RIGHT_ARROW:
+                this.simulator.incrementMembraneX();
+                break;
             case 49:  // 1
                 this.renderMode = RENDER_MODE_NORMAL;
                 break;
