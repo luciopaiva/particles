@@ -12,6 +12,7 @@ class Logger {
         this.minNeighborCount = $('#min-neighbor-count');
         this.averageNeighborCount = $('#avg-neighbor-count');
         this.maxNeighborCount = $('#max-neighbor-count');
+        this.waveIntensity = $('#wave-intensity');
     }
 
     logFloat(elem, value, prec) {
@@ -44,6 +45,10 @@ class Logger {
 
     logMaxNeighborCount(neighborCount) {
         this.maxNeighborCount.text(neighborCount);
+    }
+
+    logWaveIntensity(waveAngle) {
+        this.logFloat(this.waveIntensity, waveAngle, 2);
     }
 }
 

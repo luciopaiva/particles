@@ -12,7 +12,7 @@ class MainApp {
 
     constructor () {
         this.started = false;
-        this.showGrid = true;
+        this.showGrid = false;
         this.renderMode = RENDER_MODE_NORMAL;
     }
 
@@ -144,17 +144,20 @@ class MainApp {
             case 51:  // 3
                 this.renderMode = RENDER_MODE_VELOCITY;
                 break;
+            case 65:  // a
+                this.simulator.toggleWave();
+                break;
             case 71:  // g
                 this.showGrid = !this.showGrid;
-                break;
-            case 87:  // w
-                this.simulator.toggleRepellingWalls();
                 break;
             case 75:  // k
                 this.simulator.resetParticlesVelocities();
                 break;
             case 82:  // r
                 this.simulator.toggleRandomParticle();
+                break;
+            case 87:  // w
+                this.simulator.toggleRepellingWalls();
                 break;
         }
     }

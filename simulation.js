@@ -3,11 +3,11 @@
 const
     SIMULATION_DISPLACE_EVENLY = false,
     SIMULATION_SPEED_LIMIT = 1,  // set to zero to disable it
-    SIMULATION_CULLING_RADIUS_EXPONENT = 5,
+    SIMULATION_CULLING_RADIUS_EXPONENT = 4,
     SIMULATION_CULLING_RADIUS = 1 << SIMULATION_CULLING_RADIUS_EXPONENT,
     SIMULATION_CULLING_DIAMETER = SIMULATION_CULLING_RADIUS << 1,
     SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
-    SIMULATION_NUM_PARTICLES = 1000;
+    SIMULATION_NUM_PARTICLES = 2000;
 
 
 class Simulation {
@@ -22,6 +22,8 @@ class Simulation {
         this.spatialIndex = new CellularSpatialIndex(SIMULATION_CULLING_RADIUS_EXPONENT, width, height);
         this.selectedParticle = null;
         this.selectedNeighbors = [];
+        this.hasWave = false;
+        this.waveIntensity = 0;
 
         if (SIMULATION_DISPLACE_EVENLY) {
             const totalArea = width * height;
@@ -60,6 +62,14 @@ class Simulation {
         let maxNeighborCount = Number.NEGATIVE_INFINITY;
         let minNeighborCount = Number.POSITIVE_INFINITY;
 
+        let waveIntensity = 1;
+        if (this.hasWave) {
+            waveIntensity = Math.cos(this.waveIntensity);
+            this.waveIntensity += 0.01;  // ToDo dissociate angle speed from refresh rate
+            logger.logWaveIntensity(waveIntensity);
+            waveIntensity *= 10;  // bigger wave
+        }
+
         // Calculate forces acting on each particle
         for (const particle of this.particles) {
             const neighbors = this.spatialIndex.getRelevantNeighbors(particle, SIMULATION_CULLING_RADIUS);
@@ -97,7 +107,7 @@ class Simulation {
                 // bottom wall
                 let distSqBottom = ((particle.getPos().y - WORLD_HEIGHT) * (particle.getPos().y - WORLD_HEIGHT)) || 1;
 
-                force.x += this.k / distSqLeft;
+                force.x += this.k * waveIntensity / distSqLeft;
                 force.x -= this.k / distSqRight;
                 force.y += this.k / distSqTop;
                 force.y -= this.k / distSqBottom;
@@ -184,5 +194,9 @@ class Simulation {
 
     toggleRepellingWalls() {
         this.shouldWallsRepel = !this.shouldWallsRepel;
+    }
+
+    toggleWave() {
+        this.hasWave = !this.hasWave;
     }
 }
