@@ -19,6 +19,8 @@ class Simulation {
         this.shouldWallsRepel = true;
         this.particles = [];
         this.spatialIndex = new CellularSpatialIndex(SIMULATION_CULLING_RADIUS_EXPONENT, width, height);
+        this.selectedParticle = null;
+        this.selectedNeighbors = [];
 
         if (SIMULATION_DISPLACE_EVENLY) {
             const totalArea = width * height;
@@ -63,6 +65,13 @@ class Simulation {
             accruedNeighborCount += neighbors.length;
             if (neighbors.length > maxNeighborCount) maxNeighborCount = neighbors.length;
             if (neighbors.length < minNeighborCount) minNeighborCount = neighbors.length;
+
+            if (particle === this.selectedParticle) {
+                this.selectedNeighbors.length = 0;
+                for (const neighbor of neighbors) {
+                    this.selectedNeighbors.push(neighbor);
+                }
+            }
 
             const force = particle.getForce();
             force.set(0, 0);
@@ -147,6 +156,25 @@ class Simulation {
         for (const particle of this.particles) {
             particle.getVelocity().set(0, 0);
         }
+    }
+
+    toggleRandomParticle() {
+        if (this.selectedParticle) {
+            this.selectedParticle = null;
+            console.info('No particle selected');
+        } else {
+            const selectedIndex = Math.floor(random(0, this.particles.length));
+            this.selectedParticle = this.particles[selectedIndex];
+            console.info('Selected particle ' + this.selectedParticle.getIndex());
+        }
+    }
+
+    getSelectedParticle() {
+        return this.selectedParticle;
+    }
+
+    getSelectedNeighbors() {
+        return this.selectedNeighbors;
     }
 
     getParticles() {

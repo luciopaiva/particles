@@ -90,6 +90,16 @@ function draw() {
         // text(particle.getIndex(), pos.x + 10, pos.y);
     }
 
+    const selectedParticle = sim.getSelectedParticle();
+    if (selectedParticle) {
+        fill(255, 204, 200);
+        ellipse(selectedParticle.getPos().x, selectedParticle.getPos().y, 8, 8);
+        fill(255, 0, 0);
+        for (const neighbor of sim.getSelectedNeighbors()) {
+            ellipse(neighbor.getPos().x, neighbor.getPos().y, 8, 8);
+        }
+    }
+
     accruedSpeeds /= sim.getParticles().length;
     logger.logAvgSpeed(accruedSpeeds);
     logger.logNumParticles(sim.getParticles().length);
@@ -118,6 +128,10 @@ function keyPressed() {
             break;
         case 75:  // k
             sim.resetParticlesVelocities();
+            break;
+        case 82:  // r
+            sim.toggleRandomParticle();
+            break;
         default:
             console.info('keyCode = ' + keyCode);
     }
