@@ -2,7 +2,6 @@
 
 # To do
 
-- gravity
 - toogle force mode:
   1. inverse gravitation force (inversely proportional to the square distance between each pair of particles)
   2. nearby springs (find nearest n, calculate average distance d and use it as a the rest length of a spring between

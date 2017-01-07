@@ -3,13 +3,13 @@
 const
     SIMULATION_DISPLACE_EVENLY = false,
     SIMULATION_SPEED_LIMIT = 1,  // set to zero to disable it
-    SIMULATION_CULLING_RADIUS_EXPONENT = 4,
+    SIMULATION_CULLING_RADIUS_EXPONENT = 5,
     SIMULATION_CULLING_RADIUS = 1 << SIMULATION_CULLING_RADIUS_EXPONENT,
     SIMULATION_CULLING_DIAMETER = SIMULATION_CULLING_RADIUS << 1,
     SIMULATION_REPULSION_CONSTANT_FACTOR = 10,
     SIMULATION_MEMBRANE_MOVEMENT_DELTA = 10,
     SIMULATION_MEMBRANE_MINIMUM_BORDER_OFFSET = 20,
-    SIMULATION_NUM_PARTICLES = 2000;
+    SIMULATION_NUM_PARTICLES = 1000;
 
 
 class Simulation {
@@ -31,6 +31,8 @@ class Simulation {
         this.membraneGap = 32;
         this.membraneGapY = (this.height - this.membraneGap) / 2;
         this.membraneAuxVector = createVector(0, 0);
+        this.isGravityActive = false;
+        this.gravityAccel = 1;
 
         if (SIMULATION_DISPLACE_EVENLY) {
             const totalArea = width * height;
@@ -118,6 +120,10 @@ class Simulation {
                 force.x -= this.k / distSqRight;
                 force.y += this.k / distSqTop;
                 force.y -= this.k / distSqBottom;
+            }
+
+            if (this.isGravityActive) {
+                force.y += this.gravityAccel;
             }
         }
 
@@ -277,5 +283,9 @@ class Simulation {
 
     toggleMembrane() {
         this.isMembraneActive = !this.isMembraneActive;
+    }
+
+    toggleGravity() {
+        this.isGravityActive = !this.isGravityActive;
     }
 }

@@ -192,6 +192,9 @@ class MainApp {
             case 87:  // w
                 this.simulator.toggleRepellingWalls();
                 break;
+            case 89:  // y
+                this.simulator.toggleGravity();
+                break;
         }
     }
 }
