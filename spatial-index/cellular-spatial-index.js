@@ -51,7 +51,7 @@ class CellularSpatialIndexCell {
 
     *iterate() {
         let cur = this.head;
-        while (cur != null) {
+        while (cur !== null) {
             yield cur;
             cur = cur.next();
         }
@@ -61,7 +61,7 @@ class CellularSpatialIndexCell {
         let cur = this.head;
         let previous = null;
 
-        while (cur != null) {
+        while (cur !== null) {
             if (shouldPurgeEntryCallback(cur.getEntry())) {
                 if (previous) {
                     previous.next(cur.next())
@@ -256,7 +256,7 @@ class CellularSpatialIndex extends SpatialIndex {
         // if (actualCellIndex != currentCellIndex) {
         //     console.info(`Entry index ${entry.getIndex()} changed from ${currentCellIndex} to ${actualCellIndex}`);
         // }
-        return (actualCellIndex != currentCellIndex);
+        return (actualCellIndex !== currentCellIndex);
     }
 
     /**
