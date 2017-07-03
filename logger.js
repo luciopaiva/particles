@@ -1,22 +1,21 @@
 "use strict";
 
-let logger = null;
 
 class Logger {
 
     constructor () {
-        this.fps = $('#fps');
-        this.numParticles = $('#num-particles');
-        this.migratedParticles = $('#migrated-particles');
-        this.averageSpeed = $('#avg-speed');
-        this.minNeighborCount = $('#min-neighbor-count');
-        this.averageNeighborCount = $('#avg-neighbor-count');
-        this.maxNeighborCount = $('#max-neighbor-count');
-        this.waveIntensity = $('#wave-intensity');
+        this.fps = document.getElementById('fps');
+        this.numParticles = document.getElementById('num-particles');
+        this.migratedParticles = document.getElementById('migrated-particles');
+        this.averageSpeed = document.getElementById('avg-speed');
+        this.minNeighborCount = document.getElementById('min-neighbor-count');
+        this.averageNeighborCount = document.getElementById('avg-neighbor-count');
+        this.maxNeighborCount = document.getElementById('max-neighbor-count');
+        this.waveIntensity = document.getElementById('wave-intensity');
     }
 
     logFloat(elem, value, prec) {
-        elem.text(value.toFixed(prec));
+        elem.innerText = value.toFixed(prec);
     }
 
     logFps(fps) {
@@ -24,11 +23,11 @@ class Logger {
     }
 
     logNumParticles(numParticles) {
-        this.numParticles.text(numParticles);
+        this.numParticles.innerText = numParticles;
     }
 
     logMigratedParticles(migratedParticles) {
-        this.migratedParticles.text(migratedParticles);
+        this.migratedParticles.innerText = migratedParticles;
     }
 
     logAvgSpeed(speed) {
@@ -36,7 +35,7 @@ class Logger {
     }
 
     logMinNeighborCount(neighborCount) {
-        this.minNeighborCount.text(neighborCount);
+        this.minNeighborCount.innerText = neighborCount;
     }
 
     logAvgNeighborCount(neighborCount) {
@@ -44,7 +43,7 @@ class Logger {
     }
 
     logMaxNeighborCount(neighborCount) {
-        this.maxNeighborCount.text(neighborCount);
+        this.maxNeighborCount.innerText = neighborCount;
     }
 
     logWaveIntensity(waveAngle) {
@@ -52,7 +51,5 @@ class Logger {
     }
 }
 
-$(function () {
-    // wait until everything is loaded, otherwise references to ids won't work
-    logger = new Logger();
-});
+// wait until everything is loaded, otherwise references to ids won't work
+const logger = new Logger();

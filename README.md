@@ -1,8 +1,15 @@
 
+# Particles
+
+This is a experiment I made to try P5.js, a library I came to know after watching [Daniel Shiffman's](http://shiffman.net/) classes on Youtube.
+
+You can just go play it yourself online: http://luciopaiva.com/particles
+
+The experiment simulates thousands of particles, each exerting influence over (and being influenced by) its nearest neighbors. The simulation uses a technique known as bin lattice spatial subdivision (a kind of a simpler quad-tree algorithm) to make things scale when thousands of particles are being simulated.
 
 # To do
 
-- toogle force mode:
+- toggle force mode:
   1. inverse gravitation force (inversely proportional to the square distance between each pair of particles)
   2. nearby springs (find nearest n, calculate average distance d and use it as a the rest length of a spring between
      the particle and each of the n neighbors)

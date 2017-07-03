@@ -11,7 +11,7 @@ const
 class MainApp {
 
     constructor () {
-        this.started = false;
+        this.started = true;
         this.showGrid = false;
         this.renderMode = RENDER_MODE_NORMAL;
         this.previousBounceCheck = (new Date()).getTime();
@@ -43,14 +43,14 @@ class MainApp {
 
     drawParticles() {
         stroke(200, 160, 50);
-        if (this.renderMode == RENDER_MODE_NORMAL) {
+        if (this.renderMode === RENDER_MODE_NORMAL) {
             fill(255, 204, 100);
         }
 
         for (const particle of this.simulator.getParticles()) {
             const pos = particle.getPos();
 
-            if (this.renderMode == RENDER_MODE_HEADING) {
+            if (this.renderMode === RENDER_MODE_HEADING) {
                 // debug heading
                 let heading = particle.getVelocity().heading() + Math.PI;  // value between -PI and PI
                 heading = Math.floor(heading / HALF_PI);
@@ -61,7 +61,7 @@ class MainApp {
                     case 3: fill(255, 0, 255); break;
                     default: fill(255, 255, 255); break;
                 }
-            } else if (this.renderMode == RENDER_MODE_VELOCITY) {
+            } else if (this.renderMode === RENDER_MODE_VELOCITY) {
                 // debug speed
                 let speed = particle.getVelocity().mag();
                 speed = Math.min(speed, SIMULATION_SPEED_LIMIT) / SIMULATION_SPEED_LIMIT;
