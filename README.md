@@ -1,11 +1,13 @@
 
 # Particles
 
+![](screenshot.png)
+
 This is an experiment I made to try P5.js, a library I came to know after watching [Daniel Shiffman's](http://shiffman.net/) classes on Youtube.
 
-You can just go play it yourself online: http://luciopaiva.com/particles
+You can just go try it yourself online: http://luciopaiva.com/particles
 
-The experiment simulates thousands of particles, each exerting influence over (and being influenced by) its nearest neighbors. The simulation uses a technique known as bin lattice spatial subdivision (a kind of a simpler quad-tree algorithm) to make things scale when thousands of particles are being simulated.
+The experiment simulates thousands of particles, each exerting influence over (and being influenced by) its nearest neighbors. The simulation uses a technique known as bin lattice spatial subdivision (a kind of a simpler quad-tree algorithm - just a grid, really) to make things scale when thousands of particles are being simulated.
 
 # To do
 
