@@ -1,7 +1,7 @@
 
 # Particles
 
-This is a experiment I made to try P5.js, a library I came to know after watching [Daniel Shiffman's](http://shiffman.net/) classes on Youtube.
+This is an experiment I made to try P5.js, a library I came to know after watching [Daniel Shiffman's](http://shiffman.net/) classes on Youtube.
 
 You can just go play it yourself online: http://luciopaiva.com/particles
 
